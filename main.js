@@ -8,10 +8,9 @@ var game = new Phaser.Game(450, 300, Phaser.CANVAS, 'game_div');
   In it, we keep track of the ordering of the sprites
   simultaneously with an extra array.
   Additionally, we have an array of positions that each element
-  should be at when moving linearly through the order
+  should be at when moving linearly through the order.
 */
 var main_state = {
-
     preload: function(){
         // load the images
         for (var i = 1; i <= 20; i++) {
@@ -23,10 +22,9 @@ var main_state = {
         game.load.image('button_arrow_rotate','assets/button_arrow_rotate.png');
         game.load.image('button_shuffle','assets/button_shuffle.png');
         game.load.image('button_reset','assets/button_reset.png');
-        game.load.image('button_fullscreen','assets/button_fullscreen.png');
     },
 
-    create: function(){        
+    create: function(){
         // create the wheel and buttons
         game.add.sprite(201,65,'wheel');
         button_arrow_left = game.add.sprite(151,210,'button_arrow_left');
@@ -34,7 +32,6 @@ var main_state = {
         button_arrow_right = game.add.sprite(311,210,'button_arrow_right');
         button_shuffle = game.add.sprite(10,10,'button_shuffle');
         button_reset = game.add.sprite(10,84,'button_reset');
-        //button_fullscreen = game.add.sprite(300,10,'button_fullscreen');
 
         // map buttons to functions
         button_arrow_left.inputEnabled = true;
@@ -42,14 +39,12 @@ var main_state = {
         button_arrow_rotate.inputEnabled = true;
         button_shuffle.inputEnabled = true;
         button_reset.inputEnabled = true;
-        //button_fullscreen.inputEnabled = true;
 
         button_arrow_left.events.onInputDown.add(cycle_left,this);
         button_arrow_right.events.onInputDown.add(cycle_right,this);
         button_arrow_rotate.events.onInputDown.add(rotate,this);
         button_shuffle.events.onInputDown.add(shuffle,this);
         button_reset.events.onInputDown.add(reset,this);
-        //button_fullscreen.events.onInputDown.add(gofull,this);
 
         // create the number sprites, the ordering, and the positions
         this.current_order = [1,2,3,4,5,6,7,8,9,10,
@@ -74,29 +69,6 @@ var main_state = {
         space_key.onDown.add(rotate,this);
         s_key.onDown.add(shuffle,this);
         r_key.onDown.add(reset,this);
-
-        // scaling
-        if (game.device.desktop)
-        {
-            //  If you have any desktop specific settings, they can go in here
-            //game.scale.pageAlignHorizontally = true;
-        }
-        else
-        {
-            //  Same goes for mobile settings.
-            game.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-            game.scale.setScreenSize(true);
-            //  In this case we're saying "scale the game, no lower than 480x260 and no higher than 1024x768"
-            // game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
-            // game.scale.minWidth = 666;
-            // game.scale.minHeight = 400;
-            // game.scale.maxWidth = 2048;
-            // game.scale.maxHeight = 1536;
-            // game.scale.forceLandscape = true;
-            // game.scale.pageAlignHorizontally = true;
-            // game.scale.setScreenSize(true);
-            // game.scale.refresh();
-        }
     },
     update: function(){
     }
@@ -148,14 +120,14 @@ function position_sprites() {
 /*
    Calling main_state.sprite_numbers.some(game.tweens.isTweening) doesn't work,
    but then magically if I make a trivial function it does?
-   What bullshit.
+   I don't understand.
 */
-function is_tweening_fix(x){
+function is_tweening_fn(x){
     return game.tweens.isTweening(x);
 }
 
 function cycle_right() {
-    if (! (main_state.sprite_numbers).some(is_tweening_fix) ) {
+    if (! (main_state.sprite_numbers).some(is_tweening_fn) ) {
         var temp_pos = main_state.current_order[19];
         var temp_sprite = main_state.sprite_numbers[19];
         for (var i = 19; i > 0; i--) {
@@ -169,7 +141,7 @@ function cycle_right() {
 }
 
 function cycle_left() {
-    if (! main_state.sprite_numbers.some(is_tweening_fix) ) {
+    if (! main_state.sprite_numbers.some(is_tweening_fn) ) {
         var temp_pos = main_state.current_order[0];
         var temp_sprite = main_state.sprite_numbers[0];
         for (var i = 0; i < 19; i++) {
@@ -182,9 +154,9 @@ function cycle_left() {
     }
 }
 
-// currently doesn't actually rotate them, just tweens to the right place
+// doesn't actually rotate them, just tweens to the right place
 function rotate() {
-    if (! main_state.sprite_numbers.some(is_tweening_fix) ) {
+    if (! main_state.sprite_numbers.some(is_tweening_fn) ) {
         swap(main_state.current_order,0,3);
         swap(main_state.current_order,1,2);
         swap(main_state.sprite_numbers,0,3);
@@ -194,7 +166,7 @@ function rotate() {
 }
 
 function shuffle() {
-    if (! main_state.sprite_numbers.some(is_tweening_fix) ) {
+    if (! main_state.sprite_numbers.some(is_tweening_fn) ) {
         for (var i = 20; i > 0; i--) {
             var m = getRandInt(0,i);
             swap(main_state.current_order,i-1,m);
@@ -205,7 +177,7 @@ function shuffle() {
 }
 
 function reset() {
-    if (! main_state.sprite_numbers.some(is_tweening_fix) ) {
+    if (! main_state.sprite_numbers.some(is_tweening_fn) ) {
         // just do a swapsort, n is 20 so who cares.
         for (var i = 0; i < 20; i++) {
             for (var j = i; j < 20; j++) {
@@ -226,11 +198,6 @@ function tween_sprites() {
             {x:main_state.positions[i].x, y:main_state.positions[i].y},
             100,Phaser.Easing.Quadratic.None,true);
     }
-}
-
-// Full-screen function
-function gofull() {
-    //game.stage.scale.startFullScreen();
 }
 
 // Add and start the main state
